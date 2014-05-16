@@ -3,10 +3,6 @@ package com.firebase.slidee.android;
 import com.firebase.client.Firebase;
 
 public class FirebaseSlideeService {
-    public enum Commands {
-        Next,
-        Previous
-    }
 
 
     private static Firebase controlRef = new Firebase("https://slidee.firebaseio.com/control");
@@ -16,7 +12,7 @@ public class FirebaseSlideeService {
 
     }
 
-    public void pushCommand(Commands command) {
+    public void pushCommand(SlideeCommands command) {
         switch (command) {
             case Next:
                 pushControlCommand("next");

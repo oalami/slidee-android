@@ -26,19 +26,19 @@ public class ButtonControlFragment extends Fragment {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controlButtonClicked(FirebaseSlideeService.Commands.Next);
+                controlButtonClicked(SlideeCommands.Next);
             }
         });
 
         mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controlButtonClicked(FirebaseSlideeService.Commands.Previous);
+                controlButtonClicked(SlideeCommands.Previous);
             }
         });
     }
 
-    private void controlButtonClicked(FirebaseSlideeService.Commands command) {
+    private void controlButtonClicked(SlideeCommands command) {
         if(this.onControlButtonClickedListener != null) {
             onControlButtonClickedListener.onControlButtonClicked(command);
         }
@@ -50,6 +50,6 @@ public class ButtonControlFragment extends Fragment {
 
 
     public interface OnControlButtonClickedListener {
-        public void onControlButtonClicked(FirebaseSlideeService.Commands command);
+        public void onControlButtonClicked(SlideeCommands command);
     }
 }
