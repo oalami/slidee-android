@@ -80,28 +80,33 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
         return super.onOptionsItemSelected(item);
     }
 
-    private static final int STATE_DEFAULT = 0;
-    private static final int STATE_SIGN_IN = 1;
-    private static final int STATE_IN_PROGRESS = 2;
+    private enum GPlusSignInState {
+        Default,
+        SignIn,
+        InProgress
+    }
+
     private PendingIntent mSignInIntent;
     private static final int RC_SIGN_IN = 0;
     private static final int DIALOG_PLAY_SERVICES_ERROR = 0;
+
+
     // We use mSignInProgress to track whether user has clicked sign in.
     // mSignInProgress can be one of three values:
     //
-    //       STATE_DEFAULT: The default state of the application before the user
+    //             Default: The default state of the application before the user
     //                      has clicked 'sign in', or after they have clicked
     //                      'sign out'.  In this state we will not attempt to
     //                      resolve sign in errors and so will display our
     //                      Activity in a signed out state.
-    //       STATE_SIGN_IN: This state indicates that the user has clicked 'sign
+    //              SignIn: This state indicates that the user has clicked 'sign
     //                      in', so resolve successive errors preventing sign in
     //                      until the user has successfully authorized an account
     //                      for our app.
-    //   STATE_IN_PROGRESS: This state indicates that we have started an intent to
+    //          InProgress: This state indicates that we have started an intent to
     //                      resolve an error, and so we should not start further
     //                      intents until the current intent completes.
-    private int mSignInProgress;
+    private GPlusSignInState mSignInProgress;
 
     // Used to store the error code most recently returned by Google Play services
     // until the user clicks 'sign in'.
@@ -119,7 +124,7 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                 // OnConnectionFailed callback.  This will allow the user to
                 // resolve the error currently preventing our connection to
                 // Google Play services.
-                mSignInProgress = STATE_IN_PROGRESS;
+                mSignInProgress = GPlusSignInState.InProgress;
                 startIntentSenderForResult(mSignInIntent.getIntentSender(),
                         RC_SIGN_IN, null, 0, 0, 0);
             } catch (IntentSender.SendIntentException e) {
@@ -127,7 +132,7 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                         + e.getLocalizedMessage());
                 // The intent was canceled before it was sent.  Attempt to connect to
                 // get an updated ConnectionResult.
-                mSignInProgress = STATE_SIGN_IN;
+                mSignInProgress = GPlusSignInState.SignIn;
                 mGoogleApiClient.connect();
             }
         } else {
@@ -223,13 +228,13 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                         Log.i(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
                                 + connectionResult.getErrorCode());
 
-                        if (mSignInProgress != STATE_IN_PROGRESS) {
+                        if (mSignInProgress != GPlusSignInState.InProgress) {
                             // We do not have an intent in progress so we should store the latest
                             // error resolution intent for use when the sign in button is clicked.
                             mSignInIntent = connectionResult.getResolution();
                             mSignInError = connectionResult.getErrorCode();
 
-                            if (mSignInProgress == STATE_SIGN_IN) {
+                            if (mSignInProgress == GPlusSignInState.SignIn) {
                                 // STATE_SIGN_IN indicates the user already clicked the sign in button
                                 // so we should continue processing errors until the user is signed in
                                 // or they click cancel.
@@ -256,11 +261,11 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                 if (resultCode == RESULT_OK) {
                     // If the error resolution was successful we should continue
                     // processing errors.
-                    mSignInProgress = STATE_SIGN_IN;
+                    mSignInProgress = GPlusSignInState.SignIn;
                 } else {
                     // If the error resolution was not successful or the user canceled,
                     // we should stop processing errors.
-                    mSignInProgress = STATE_DEFAULT;
+                    mSignInProgress = GPlusSignInState.Default;
                 }
 
                 if (!mGoogleApiClient.isConnecting()) {
@@ -285,7 +290,7 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                                 @Override
                                 public void onCancel(DialogInterface dialog) {
                                     Log.e(TAG, "Google Play services resolution cancelled");
-                                    mSignInProgress = STATE_DEFAULT;
+                                    mSignInProgress = GPlusSignInState.Default;
 //                                    mStatus.setText(R.string.status_signed_out);
                                 }
                             });
@@ -298,7 +303,7 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                                         public void onClick(DialogInterface dialog, int which) {
                                             Log.e(TAG, "Google Play services error could not be "
                                                     + "resolved: " + mSignInError);
-                                            mSignInProgress = STATE_DEFAULT;
+                                            mSignInProgress = GPlusSignInState.Default;
 //                                            mStatus.setText(R.string.status_signed_out);
                                         }
                                     }).create();
