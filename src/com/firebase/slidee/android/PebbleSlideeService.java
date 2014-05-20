@@ -48,6 +48,7 @@ public class PebbleSlideeService {
                         }
                     }
                 });
+
                 PebbleKit.sendAckToPebble(context, transactionId);
             }
         });

@@ -14,6 +14,7 @@
 
 package com.firebase.slidee.android;
 
+import android.app.Activity;
 import com.firebase.slidee.android.slidee.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -36,7 +37,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -52,7 +52,7 @@ import java.util.ArrayList;
  * Demonstrates Google+ Sign-In and usage of the Google+ APIs to retrieve a
  * users profile information.
  */
-public class SigninActivity extends FragmentActivity implements
+public class SigninActivity extends Activity implements
         ConnectionCallbacks, OnConnectionFailedListener,
         ResultCallback<People.LoadPeopleResult>, View.OnClickListener {
 
@@ -232,8 +232,6 @@ public class SigninActivity extends FragmentActivity implements
         // Indicate that the sign in process is complete.
         mSignInProgress = STATE_DEFAULT;
 
-        FirebaseSimpleLoginTask login = new FirebaseSimpleLoginTask(this, Plus.AccountApi.getAccountName(mGoogleApiClient), SCOPES);
-        login.execute();
     }
 
     /* onConnectionFailed is called when our Activity could not connect to Google
