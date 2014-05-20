@@ -2,6 +2,5 @@
     <item android:id="@+id/action_signin"
           android:title="@string/action_signin"/>
     <item android:id="@+id/action_signout"
-          android:title="@string/action_signout"
-          android:enabled="false"/>
+          android:title="@string/action_signout"/>
 </menu>

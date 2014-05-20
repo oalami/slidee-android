@@ -140,9 +140,38 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
             // error types, so we show the default Google Play services error
             // dialog which may still start an intent on our behalf if the
             // user can resolve the issue.
-            showDialog(DIALOG_PLAY_SERVICES_ERROR);
+            showPlayServicesDialog();
         }
     }
+
+    protected void showPlayServicesDialog() {
+        if (GooglePlayServicesUtil.isUserRecoverableError(mSignInError)) {
+            GooglePlayServicesUtil.getErrorDialog(
+                    mSignInError,
+                    this,
+                    RC_SIGN_IN,
+                    new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            Log.e(TAG, "Google Play services resolution cancelled");
+                            mSignInProgress = GPlusSignInState.Default;
+                        }
+                    }).show();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.play_services_error)
+                    .setPositiveButton(R.string.close,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Log.e(TAG, "Google Play services error could not be "
+                                            + "resolved: " + mSignInError);
+                                    mSignInProgress = GPlusSignInState.Default;
+                                }
+                            }).create().show();
+        }
+    }
+
 
     private void gPlusSignOut() {
         mFirebaseService.logout();
@@ -171,7 +200,7 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
 //                        mSignInButton.setEnabled(false);
 //                        mSignOutButton.setEnabled(true);
                         break;
-                    case NotLoggedIn:
+                    case Default:
                         // Update the user interface to reflect that the user is signed in.
 //                        mSignInButton.setEnabled(true);
 //                        mSignOutButton.setEnabled(false);
@@ -274,42 +303,6 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                     mGoogleApiClient.connect();
                 }
                 break;
-        }
-    }
-
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DIALOG_PLAY_SERVICES_ERROR:
-                if (GooglePlayServicesUtil.isUserRecoverableError(mSignInError)) {
-                    return GooglePlayServicesUtil.getErrorDialog(
-                            mSignInError,
-                            this,
-                            RC_SIGN_IN,
-                            new DialogInterface.OnCancelListener() {
-                                @Override
-                                public void onCancel(DialogInterface dialog) {
-                                    Log.e(TAG, "Google Play services resolution cancelled");
-                                    mSignInProgress = GPlusSignInState.Default;
-//                                    mStatus.setText(R.string.status_signed_out);
-                                }
-                            });
-                } else {
-                    return new AlertDialog.Builder(this)
-                            .setMessage(R.string.play_services_error)
-                            .setPositiveButton(R.string.close,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Log.e(TAG, "Google Play services error could not be "
-                                                    + "resolved: " + mSignInError);
-                                            mSignInProgress = GPlusSignInState.Default;
-//                                            mStatus.setText(R.string.status_signed_out);
-                                        }
-                                    }).create();
-                }
-            default:
-                return super.onCreateDialog(id);
         }
     }
 

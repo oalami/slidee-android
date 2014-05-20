@@ -23,7 +23,7 @@ public class FirebaseSlideeService {
 
     private static Firebase rootRef = new Firebase("https://slidee.firebaseio.com");
     private static Firebase controlRef = rootRef.child("control");
-    private static Firebase currentRef = rootRef.child("current");
+    //private static Firebase currentRef = rootRef.child("current");
 
     private GoogleApiClient mGoogleApiClient;
     private Context mContext;
@@ -32,10 +32,9 @@ public class FirebaseSlideeService {
     private OnLoginStateChangedListener mLoginStateChangedListener = null;
 
     public enum LoginState {
-        NotLoggedIn,
+        Default,
         LoggingIn,
-        LoggedIn,
-        LogInError
+        LoggedIn
     }
 
     public interface OnLoginStateChangedListener {
@@ -103,7 +102,7 @@ public class FirebaseSlideeService {
         mSimpleLoginClient.logout();
 
         //TODO: do this right, listen to .info/authenticated
-        loginStateChanged(LoginState.NotLoggedIn);
+        loginStateChanged(LoginState.Default);
 
     }
 
@@ -112,7 +111,7 @@ public class FirebaseSlideeService {
             public void authenticated(FirebaseSimpleLoginError error, FirebaseSimpleLoginUser user) {
                 if (error != null) {
                     Log.e(TAG, error.toString());
-                    loginStateChanged(LoginState.LogInError);
+                    loginStateChanged(LoginState.Default);
                 } else {
                     Log.d(TAG, "logged in!");
                     loginStateChanged(LoginState.LoggedIn);
@@ -123,7 +122,7 @@ public class FirebaseSlideeService {
 
     protected String fetchToken() throws IOException {
         try {
-            return GoogleAuthUtil.getToken(
+            GoogleAuthUtil.getToken(
                     mContext,
                     Plus.AccountApi.getAccountName(mGoogleApiClient),
                     "oauth2:" + SCOPES);
