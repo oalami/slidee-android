@@ -21,13 +21,17 @@ public class FirebaseSlideeService {
     private static final String TAG = "FirebaseSlideeService";
     private static final String SCOPES = "https://www.googleapis.com/auth/plus.login";
 
+    private static final String CONTROL_REF = "control";
+
     private static Firebase rootRef = new Firebase("https://slidee.firebaseio.com");
-    private static Firebase controlRef = rootRef.child("control");
+//    private static Firebase controlRef = rootRef.child("control");
     //private static Firebase currentRef = rootRef.child("current");
 
     private GoogleApiClient mGoogleApiClient;
     private Context mContext;
     private SimpleLogin mSimpleLoginClient;
+    private LoginState mCurrentLoginState = LoginState.Default;
+    private FirebaseSimpleLoginUser mSimpleLoginUser = null;
 
     private OnLoginStateChangedListener mLoginStateChangedListener = null;
 
@@ -54,6 +58,7 @@ public class FirebaseSlideeService {
     }
 
     private void loginStateChanged(final LoginState state) {
+        mCurrentLoginState = state;
         if(mLoginStateChangedListener != null) {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
@@ -77,7 +82,10 @@ public class FirebaseSlideeService {
     }
 
     private void pushControlCommand(String command) {
-        controlRef.push().setValue(command);
+        if(mCurrentLoginState == LoginState.LoggedIn) {
+            String uid = mSimpleLoginUser.getUid();
+            rootRef.child(uid).child(CONTROL_REF).push().setValue(command);
+        }
     }
 
     public void login() {
@@ -90,9 +98,13 @@ public class FirebaseSlideeService {
                     String token = fetchToken();
                     if (token != null) {
                         simpleLogin(token);
+                    } else {
+                        Log.e(TAG, "No token");
+                        loginStateChanged(LoginState.Default);
                     }
                 } catch (IOException e) {
                     Log.e(TAG, e.toString());
+                    loginStateChanged(LoginState.Default);
                 }
             }
         }).start();
@@ -100,6 +112,7 @@ public class FirebaseSlideeService {
 
     public void logout() {
         mSimpleLoginClient.logout();
+        mSimpleLoginUser = null;
 
         //TODO: do this right, listen to .info/authenticated
         loginStateChanged(LoginState.Default);
@@ -114,6 +127,7 @@ public class FirebaseSlideeService {
                     loginStateChanged(LoginState.Default);
                 } else {
                     Log.d(TAG, "logged in!");
+                    mSimpleLoginUser = user;
                     loginStateChanged(LoginState.LoggedIn);
                 }
             }
@@ -122,7 +136,7 @@ public class FirebaseSlideeService {
 
     protected String fetchToken() throws IOException {
         try {
-            GoogleAuthUtil.getToken(
+            return GoogleAuthUtil.getToken(
                     mContext,
                     Plus.AccountApi.getAccountName(mGoogleApiClient),
                     "oauth2:" + SCOPES);

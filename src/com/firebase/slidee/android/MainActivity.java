@@ -27,6 +27,31 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
     private MenuItem mSignInButton;
     private MenuItem mSignOutButton;
 
+    private PendingIntent mSignInIntent;
+    private static final int RC_SIGN_IN = 0;
+
+    // We use mSignInProgress to track whether user has clicked sign in.
+    // mSignInProgress can be one of three values:
+    //
+    //             Default: The default state of the application before the user
+    //                      has clicked 'sign in', or after they have clicked
+    //                      'sign out'.  In this state we will not attempt to
+    //                      resolve sign in errors and so will display our
+    //                      Activity in a signed out state.
+    //              SignIn: This state indicates that the user has clicked 'sign
+    //                      in', so resolve successive errors preventing sign in
+    //                      until the user has successfully authorized an account
+    //                      for our app.
+    //          InProgress: This state indicates that we have started an intent to
+    //                      resolve an error, and so we should not start further
+    //                      intents until the current intent completes.
+    private GPlusSignInState mSignInProgress;
+
+    // Used to store the error code most recently returned by Google Play services
+    // until the user clicks 'sign in'.
+    private int mSignInError;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +71,21 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
         mGoogleApiClient = buildGoogleApiClient();
 
         mFirebaseService = getFirebaseService();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -86,31 +126,6 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
         InProgress
     }
 
-    private PendingIntent mSignInIntent;
-    private static final int RC_SIGN_IN = 0;
-    private static final int DIALOG_PLAY_SERVICES_ERROR = 0;
-
-
-    // We use mSignInProgress to track whether user has clicked sign in.
-    // mSignInProgress can be one of three values:
-    //
-    //             Default: The default state of the application before the user
-    //                      has clicked 'sign in', or after they have clicked
-    //                      'sign out'.  In this state we will not attempt to
-    //                      resolve sign in errors and so will display our
-    //                      Activity in a signed out state.
-    //              SignIn: This state indicates that the user has clicked 'sign
-    //                      in', so resolve successive errors preventing sign in
-    //                      until the user has successfully authorized an account
-    //                      for our app.
-    //          InProgress: This state indicates that we have started an intent to
-    //                      resolve an error, and so we should not start further
-    //                      intents until the current intent completes.
-    private GPlusSignInState mSignInProgress;
-
-    // Used to store the error code most recently returned by Google Play services
-    // until the user clicks 'sign in'.
-    private int mSignInError;
 
     private void gPlusSignIn() {
         if (mSignInIntent != null) {
@@ -164,8 +179,7 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Log.e(TAG, "Google Play services error could not be "
-                                            + "resolved: " + mSignInError);
+                                    Log.e(TAG, "Google Play services error could not be resovled: " + mSignInError);
                                     mSignInProgress = GPlusSignInState.Default;
                                 }
                             }).create().show();
@@ -303,21 +317,6 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
                     mGoogleApiClient.connect();
                 }
                 break;
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
         }
     }
 }
