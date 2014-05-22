@@ -16,7 +16,7 @@
 -->
 <resources>
 
-    <string name="app_name">Slidee Controler</string>
+    <string name="app_name">SlideF Controller</string>
 
     <string name="next_button_text">→</string>
     <string name="prev_button_text">←</string>

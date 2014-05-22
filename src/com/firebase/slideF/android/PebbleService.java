@@ -1,27 +1,26 @@
-package com.firebase.slidee.android;
+package com.firebase.slideF.android;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 import java.util.UUID;
 
-public class PebbleSlideeService {
-    private final static String TAG = "PebbleSlideeService";
+public class PebbleService {
+    private final static String TAG = "PebbleService";
     private final static UUID PEBBLE_APP_UUID = UUID.fromString("bf928738-7ffb-44a0-a1b7-61309c1d69c8");
     private OnPebbleCommandReceivedListener listener;
 
     public interface OnPebbleCommandReceivedListener {
-        void onPebbleCommandReceivedListener(SlideeCommands command);
+        void onPebbleCommandReceivedListener(Commands command);
     }
 
     public void setOnPebbleCommandReceivedListener(OnPebbleCommandReceivedListener listener) {
         this.listener = listener;
     }
 
-    public PebbleSlideeService(Context context) {
+    public PebbleService(Context context) {
         if (PebbleKit.isWatchConnected(context)) {
             PebbleKit.startAppOnPebble(context, PEBBLE_APP_UUID);
         }
@@ -38,12 +37,12 @@ public class PebbleSlideeService {
                     public void run() {
                         switch (command) {
                             case 0:
-                                commandReceived(SlideeCommands.Next);
+                                commandReceived(Commands.Next);
                                 break;
                             case 1:
                                 break;
                             case 2:
-                                commandReceived(SlideeCommands.Previous);
+                                commandReceived(Commands.Previous);
                                 break;
                         }
                     }
@@ -54,7 +53,7 @@ public class PebbleSlideeService {
         });
     }
 
-    private void commandReceived(SlideeCommands command) {
+    private void commandReceived(Commands command) {
         if (listener != null) {
             listener.onPebbleCommandReceivedListener(command);
         }

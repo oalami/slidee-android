@@ -1,4 +1,4 @@
-package com.firebase.slidee.android;
+package com.firebase.slideF.android;
 
 import android.content.Context;
 import android.os.Handler;
@@ -17,13 +17,13 @@ import com.google.android.gms.plus.Plus;
 
 import java.io.IOException;
 
-public class FirebaseSlideeService {
-    private static final String TAG = "FirebaseSlideeService";
+public class FirebaseService {
+    private static final String TAG = "FirebaseService";
     private static final String SCOPES = "https://www.googleapis.com/auth/plus.login";
 
     private static final String CONTROL_REF = "control";
 
-    private static Firebase rootRef = new Firebase("https://slidee.firebaseio.com");
+    private static Firebase rootRef = new Firebase("https://slidef.firebaseio.com");
 //    private static Firebase controlRef = rootRef.child("control");
     //private static Firebase currentRef = rootRef.child("current");
 
@@ -46,7 +46,7 @@ public class FirebaseSlideeService {
     }
 
 
-    public FirebaseSlideeService(GoogleApiClient client, Context context) {
+    public FirebaseService(GoogleApiClient client, Context context) {
         this.mGoogleApiClient = client;
         this.mContext = context;
 
@@ -70,7 +70,7 @@ public class FirebaseSlideeService {
         }
     }
 
-    public void pushCommand(SlideeCommands command) {
+    public void pushCommand(Commands command) {
         switch (command) {
             case Next:
                 pushControlCommand("next");

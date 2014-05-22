@@ -1,4 +1,4 @@
-package com.firebase.slidee.android;
+package com.firebase.slideF.android;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import com.firebase.slidee.android.slidee.R;
 
 public class ButtonControlFragment extends Fragment {
     private OnControlButtonClickedListener onControlButtonClickedListener;
@@ -26,19 +25,19 @@ public class ButtonControlFragment extends Fragment {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controlButtonClicked(SlideeCommands.Next);
+                controlButtonClicked(Commands.Next);
             }
         });
 
         mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controlButtonClicked(SlideeCommands.Previous);
+                controlButtonClicked(Commands.Previous);
             }
         });
     }
 
-    private void controlButtonClicked(SlideeCommands command) {
+    private void controlButtonClicked(Commands command) {
         if(this.onControlButtonClickedListener != null) {
             onControlButtonClickedListener.onControlButtonClicked(command);
         }
@@ -50,6 +49,6 @@ public class ButtonControlFragment extends Fragment {
 
 
     public interface OnControlButtonClickedListener {
-        public void onControlButtonClicked(SlideeCommands command);
+        public void onControlButtonClicked(Commands command);
     }
 }

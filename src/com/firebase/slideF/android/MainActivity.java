@@ -1,8 +1,7 @@
-package com.firebase.slidee.android;
+package com.firebase.slideF.android;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,11 +16,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
-public class MainActivity extends Activity implements ButtonControlFragment.OnControlButtonClickedListener, PebbleSlideeService.OnPebbleCommandReceivedListener {
+public class MainActivity extends Activity implements ButtonControlFragment.OnControlButtonClickedListener, PebbleService.OnPebbleCommandReceivedListener {
     private static final String TAG = "MainActivity";
 
-    private FirebaseSlideeService mFirebaseService;
-    private PebbleSlideeService mPebbleService;
+    private FirebaseService mFirebaseService;
+    private PebbleService mPebbleService;
     private GoogleApiClient mGoogleApiClient;
 
     private MenuItem mSignInButton;
@@ -62,10 +61,10 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
         ButtonControlFragment buttonControlFragment = (ButtonControlFragment) getFragmentManager().findFragmentById(R.id.button_control_fragment);
         buttonControlFragment.setOnControlButtonClickedListener(this);
 
-        mSignInButton = (MenuItem) findViewById(R.id.sign_in_button);
-        mSignOutButton = (MenuItem) findViewById(R.id.sign_out_button);
+        mSignInButton = (MenuItem) findViewById(R.id.action_signin);
+        mSignOutButton = (MenuItem) findViewById(R.id.action_signout);
 
-        mPebbleService = new PebbleSlideeService(getApplicationContext());
+        mPebbleService = new PebbleService(getApplicationContext());
         mPebbleService.setOnPebbleCommandReceivedListener(this);
 
         mGoogleApiClient = buildGoogleApiClient();
@@ -89,12 +88,12 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
     }
 
     @Override
-    public void onControlButtonClicked(SlideeCommands command) {
+    public void onControlButtonClicked(Commands command) {
         mFirebaseService.pushCommand(command);
     }
 
     @Override
-    public void onPebbleCommandReceivedListener(SlideeCommands command) {
+    public void onPebbleCommandReceivedListener(Commands command) {
         mFirebaseService.pushCommand(command);
     }
 
@@ -198,15 +197,15 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
         mGoogleApiClient.connect();
     }
 
-    private FirebaseSlideeService getFirebaseService() {
+    private FirebaseService getFirebaseService() {
         if (mFirebaseService != null) {
             return mFirebaseService;
         }
 
-        mFirebaseService = new FirebaseSlideeService(mGoogleApiClient, this);
-        mFirebaseService.setOnLoginStateChangedListener(new FirebaseSlideeService.OnLoginStateChangedListener() {
+        mFirebaseService = new FirebaseService(mGoogleApiClient, this);
+        mFirebaseService.setOnLoginStateChangedListener(new FirebaseService.OnLoginStateChangedListener() {
             @Override
-            public void onLoginStateChanged(FirebaseSlideeService.LoginState state) {
+            public void onLoginStateChanged(FirebaseService.LoginState state) {
                 Log.i(TAG, "State Changed " + state.toString());
                 switch (state) {
                     case LoggedIn:
