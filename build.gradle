@@ -22,6 +22,8 @@ dependencies {
 dependencies {
     compile 'com.firebase:firebase-client:1.0.13'
     compile project(':PebbleKit')
+
+//    compile 'com.firebase:firebase-simple-login:1.2.1+'
     compile files('libs/firebase-simple-login-LATEST.jar')
 
 }
