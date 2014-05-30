@@ -1,0 +1,6 @@
+/lint.xml
+/gen
+/.settings
+/bin
+build/
+.gradle/

@@ -290,7 +290,7 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
 
                     }
                 })
-                .addApi(Plus.API, null)
+                .addApi(Plus.API)
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .build();
     }
