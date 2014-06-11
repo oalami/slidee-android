@@ -24,8 +24,6 @@ public class FirebaseService {
     private static final String CONTROL_REF = "control";
 
     private static Firebase rootRef = new Firebase("https://slidef.firebaseio.com");
-//    private static Firebase controlRef = rootRef.child("control");
-    //private static Firebase currentRef = rootRef.child("current");
 
     private GoogleApiClient mGoogleApiClient;
     private Context mContext;
@@ -45,7 +43,11 @@ public class FirebaseService {
         public void onLoginStateChanged(LoginState state);
     }
 
-
+    /**
+     * Creates a new FirebaseService
+     * @param client the google API client
+     * @param context the Android context
+     */
     public FirebaseService(GoogleApiClient client, Context context) {
         this.mGoogleApiClient = client;
         this.mContext = context;
@@ -57,6 +59,11 @@ public class FirebaseService {
         mLoginStateChangedListener = listener;
     }
 
+
+    /**
+     * Raises a login state changed event if the listener is not null.
+     * @param state the state to raise
+     */
     private void loginStateChanged(final LoginState state) {
         mCurrentLoginState = state;
         if(mLoginStateChangedListener != null) {
@@ -70,6 +77,10 @@ public class FirebaseService {
         }
     }
 
+    /**
+     * Pushes a command to Firebase to control the slide deck.
+     * @param command the command to push
+     */
     public void pushCommand(Commands command) {
         switch (command) {
             case Next:
@@ -81,6 +92,10 @@ public class FirebaseService {
         }
     }
 
+    /**
+     * Pushes a string command to Firebase to control the slide deck.
+     * @param command the command to push
+     */
     private void pushControlCommand(String command) {
         if(mCurrentLoginState == LoginState.LoggedIn) {
             String uid = mSimpleLoginUser.getUid();
@@ -88,6 +103,9 @@ public class FirebaseService {
         }
     }
 
+    /**
+     * Logs in using Firebase Simple Login
+     */
     public void login() {
         loginStateChanged(LoginState.LoggingIn);
 
@@ -110,6 +128,10 @@ public class FirebaseService {
         }).start();
     }
 
+
+    /**
+     * Logs the user out of Firebase
+     */
     public void logout() {
         mSimpleLoginClient.logout();
         mSimpleLoginUser = null;
@@ -119,7 +141,12 @@ public class FirebaseService {
 
     }
 
-    public void simpleLogin(String accessToken) {
+    /**
+     * Given an access token initiates a firebase simple login
+     *
+     * @param accessToken the access token as provided by the G+ API
+     */
+    private void simpleLogin(String accessToken) {
         mSimpleLoginClient.loginWithGoogle(accessToken, new SimpleLoginAuthenticatedHandler() {
             public void authenticated(FirebaseSimpleLoginError error, FirebaseSimpleLoginUser user) {
                 if (error != null) {
@@ -134,6 +161,11 @@ public class FirebaseService {
         });
     }
 
+    /**
+     * Fetches an access token from the G+ API
+     * @return the access token
+     * @throws IOException
+     */
     protected String fetchToken() throws IOException {
         try {
             return GoogleAuthUtil.getToken(
