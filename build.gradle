@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.10.0+'
+        classpath 'com.android.tools.build:gradle:0.12.0+'
     }
 }
 
@@ -17,24 +17,15 @@ repositories {
 dependencies {
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.google.android.gms:play-services:4.4.52'
-}
-
-dependencies {
     compile 'com.firebase:firebase-client:1.0.13'
-    compile project(':PebbleKit')
 
 //    compile 'com.firebase:firebase-simple-login:1.2.1+'
     compile files('libs/firebase-simple-login-LATEST.jar')
-
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.12'
 }
 
 android {
-    buildToolsVersion "19.0.3"
-    compileSdkVersion 19
+    buildToolsVersion "20"
+    compileSdkVersion 20
 
     sourceSets {
         main {

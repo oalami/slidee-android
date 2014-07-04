@@ -16,11 +16,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
-public class MainActivity extends Activity implements ButtonControlFragment.OnControlButtonClickedListener, PebbleService.OnPebbleCommandReceivedListener {
+public class MainActivity extends Activity implements ButtonControlFragment.OnControlButtonClickedListener {
     private static final String TAG = "MainActivity";
 
     private FirebaseService mFirebaseService;
-    private PebbleService mPebbleService;
     private GoogleApiClient mGoogleApiClient;
 
     private MenuItem mSignInButton;
@@ -64,9 +63,6 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
         mSignInButton = (MenuItem) findViewById(R.id.action_signin);
         mSignOutButton = (MenuItem) findViewById(R.id.action_signout);
 
-        mPebbleService = new PebbleService(getApplicationContext());
-        mPebbleService.setOnPebbleCommandReceivedListener(this);
-
         mGoogleApiClient = buildGoogleApiClient();
 
         mFirebaseService = getFirebaseService();
@@ -92,10 +88,6 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
         mFirebaseService.pushCommand(command);
     }
 
-    @Override
-    public void onPebbleCommandReceivedListener(Commands command) {
-        mFirebaseService.pushCommand(command);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
