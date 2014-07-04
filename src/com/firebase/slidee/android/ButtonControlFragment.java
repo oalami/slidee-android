@@ -1,4 +1,4 @@
-package com.firebase.slideF.android;
+package com.firebase.slidee.android;
 
 import android.app.Fragment;
 import android.os.Bundle;

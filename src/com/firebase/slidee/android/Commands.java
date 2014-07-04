@@ -1,4 +1,4 @@
-package com.firebase.slideF.android;
+package com.firebase.slidee.android;
 
 public enum Commands {
     Next,
