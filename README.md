@@ -1,4 +1,4 @@
-slideF-android
+slidee-android
 ==============
 
 An Android slide controller for using Firebase and Firebase Simple Login. 
