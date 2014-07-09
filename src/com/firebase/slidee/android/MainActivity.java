@@ -2,11 +2,15 @@ package com.firebase.slidee.android;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +32,8 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
 
     private PendingIntent mSignInIntent;
     private static final int RC_SIGN_IN = 0;
+
+    static final String ACTION_NEXTSLIDE = "com.firebase.slidee.action.NEXTSLIDE";
 
     // We use mSignInProgress to track whether user has clicked sign in.
     // mSignInProgress can be one of three values:
@@ -70,6 +76,25 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
         mGoogleApiClient = buildGoogleApiClient();
 
         mFirebaseService = getFirebaseService();
+
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        String action = intent.getAction();
+
+        if(action.equals(ACTION_NEXTSLIDE)) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mFirebaseService.pushCommand(Commands.Next);
+                }
+            }).start();
+
+        }
+
+        super.onNewIntent(intent);
     }
 
     @Override
@@ -112,12 +137,57 @@ public class MainActivity extends Activity implements ButtonControlFragment.OnCo
             case R.id.action_signout:
                 gPlusSignOut();
                 return true;
+            case R.id.action_notification:
+                notification();
+                return true;
             default:
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void notification() {
+        int notificationId = 001;
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!");
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+        PendingIntent nextPendingIntent = PendingIntent.getActivity(this, 2, new Intent(ACTION_NEXTSLIDE), 0);
+
+
+        mBuilder.addAction(R.drawable.ic_launcher, getString(R.string.next_button_text), nextPendingIntent);
+
+
+
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(notificationId, mBuilder.build());
+    }
+
 
     private enum GPlusSignInState {
         Default,

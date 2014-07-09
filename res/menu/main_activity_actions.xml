@@ -3,4 +3,7 @@
           android:title="@string/action_signin"/>
     <item android:id="@+id/action_signout"
           android:title="@string/action_signout"/>
+    <item android:id="@+id/action_notification"
+        android:title="@string/action_notification"/>
+
 </menu>

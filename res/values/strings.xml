@@ -43,5 +43,6 @@
     <string name="profile_picture">User\'s profile picture.</string>
     <string name="action_signin">Sign In</string>
     <string name="action_signout">Signout</string>
+    <string name="action_notification">Notification</string>
 
 </resources>
